@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" >
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title th:text="${application.config.webName}+-登录页面"></title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/vector.js"></script>
+
+<!--添加 layui  支持加载-->
+<link rel="stylesheet" href="/layui-v2.5.4/layui/css/layui.css">
+<script src="/layui-v2.5.4/layui/layui.js"></script>
+
+
+<!--添加 jq  支持加载-->
+<script	src="/jq/jquery_2_1.min.js"></script>
+
+
+
+
+</head>
+<script>
+</script>
+<body id="app">
+	<div id="container">
+	<div id="output">
+		<div class="containerT">
+			<h1>后台管理系统</h1><br/>
+			<form class="form" id="fm">
+				<input type="text" placeholder="请输入用户名" id="name" onkeydown="if(event.keyCode==13) go_login()">
+				<input type="password" placeholder="请输入密码" id="password" onkeydown="if(event.keyCode==13) go_login()">
+				<button type="button" id="entry_btn" class="layui-btn" onclick="go_login()" lay-submit="" lay-filter="demo1">登录</button>
+				<div id="prompt" class="prompt"></div>
+			</form>
+		</div>
+	</div>
+</div>
+
+</body>
+
+<script>
+	layui.use([ 'laydate', 'laypage', 'layer', 'table', 'carousel', 'upload',
+			'element' ], function() {
+		var laydate = layui.laydate //日期
+		, laypage = layui.laypage //分页
+		, layer = layui.layer //弹层
+		, table = layui.table //表格
+		, carousel = layui.carousel //轮播
+		, upload = layui.upload //上传
+		, element = layui.element; //元素操作
+		
+	});
+</script>
+<script>
+
+$(function(){
+	  if (top != window){
+	    top.location.href = window.location.href; 
+	  }
+	});
+	
+$(function() {
+	Victor("container", "output");   //登录背景函数
+		$("#name").focus();
+});
+	
+	function go_login() {
+		
+		
+		var name = $("#name").val();
+		var password = $("#password").val();
+		
+		if (name == null || name == "") {
+			layer.closeAll();
+			layer.alert('请输入帐号!');
+			return;
+		}
+		
+		if (password == null || password == "") {
+			layer.closeAll();
+			layer.alert('请输入密码!');
+			return;
+		}
+		
+		$.post('/user/login', {
+			name : name,
+			password : password
+		}, function(result) {
+			if (result.success) {
+				layer.closeAll();
+				window.location.href = "/admin/main";
+			} else {
+				layer.closeAll();
+				layer.alert(result.msg);
+			}
+		}, 'json');
+	}
+</script>
+
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title th:text="${title}"></title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/layui-v2.5.4/layui/css/layui.css"  media="all">
+  <script src="/layui-v2.5.4/layui/layui.js" charset="utf-8"></script>
+</head>
+<body style="padding-top: 3px;">
+<table class="layui-hide" id="table" lay-filter="table"></table>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-sm" lay-event="add">添加</button>
+    <button class="layui-btn layui-btn-sm" lay-event="del">删除</button>
+    <button class="layui-btn layui-btn-sm" lay-event="reload_data">刷新</button>
+  </div>
+</script>
+ 
+
+<script type="text/html" id="table_bar">
+<div class="layui-btn-group">
+	<a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+	<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="set_menu">设置菜单</a>
+</div>
+</script>
+
+<script th:inline="none">
+		layui.use(['table','layer'], function() {
+			var table = layui.table; //表格
+			var layer = layui.layer;
+			var $ = layui.jquery;
+			  table.render({
+			    elem: '#table'
+			    ,url: '/admin/role/list'
+			    ,totalRow: false
+			    ,page: true
+			    ,id: 'table'
+			    ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+			    ,limit:10
+			    ,limits:[10,20,30,50]
+				,cols: [[
+			       {checkbox: true, fixed: true}
+			      ,{field:'orderNo', title: '排序号',sort: true}
+			      ,{field:'name', title: '角色名称'}
+			      ,{field:'remark', title: '备注'}
+			      ,{field:'createDateTime', title: '创建时间',sort: true}
+			      ,{field:'updateDateTime', title: '修改时间',sort: true}
+			      ,{fixed:'right', title: '操作',  toolbar: '#table_bar'}
+			       ]]
+			  
+			  });
+			//头工具栏事件
+			  table.on('toolbar(table)', function(obj){
+			    var checkStatus = table.checkStatus(obj.config.id);
+			    switch(obj.event){
+			      case 'add':
+			    	  layer.open({
+			    		  type: 2,
+						  title: '添加',
+						  shadeClose: false,
+						  shade: 0.8,
+						  area: ['600px', '500px'],
+						  content: '/houtai/role/add' //iframe的url
+			    		}); 
+			      break;
+			      case 'del':			    	  
+			    	  /* var index = layer.load(1, {
+			    		  shade: [0.1,'#fff'] //0.1透明度的白色背景
+			    	}); */  
+			    	  var data  = checkStatus.data;
+			    	  //var roleList = JSON.stringify(data);
+			    	  //layer.alert(roleList);
+			    	  if(data.length!=0){
+			    		  var params="";
+			    		  $.each(data,function(i,item){
+				                 if(i==0){
+				                    params+="ids="+item.id;
+				                }else{
+				                    params+="&ids="+item.id;
+				                } 
+				            });
+				    	  layer.confirm('您确定要删除吗', function(index){
+				                //向服务端发送删除指令
+				                $.post('/admin/role/delete',params,function(result){
+				                	if(result.success){
+						    			layer.closeAll();
+						    			layer.msg('删除成功');
+						    			  table.reload('table', {
+								    			where: {}
+								    	  		,page: {curr: 1}//重新从第 1 页开始
+								    	    });
+						    		}else{
+						    			layer.closeAll();
+						    			layer.alert('删除失败:'+result.msg);
+						    		}
+				                });
+				            });
+			    	  }else{
+			    		  layer.closeAll();
+			    		  layer.alert("请选择要删除的角色"); 	  
+			    	  }
+			      break;
+			      case 'reload_data':
+			    	  table.reload('table', {
+			    			where: {}
+			    	  		,page: {curr: 1}//重新从第 1 页开始
+			    	    });
+			      break;
+			    };
+			  });
+			
+			//监听行工具条 table_bar
+				table.on('tool(table)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+					 var data = obj.data; //获得当前行数据
+					 var layEvent = obj.event; //获得 lay-event 对应的值
+					 var id = data.id;
+					if (layEvent === 'edit') {
+						layer.open({
+							  type: 2,
+							  title: '修改',
+							  shadeClose: false,
+							  shade: 0.8,
+							  area: ['600px', '300px'],
+							  content: '/houtai/role/edit?id='+id //iframe的url
+							});
+						
+					}else if(layEvent === 'set_menu'){
+						layer.open({
+							  type: 2,
+							  title: '设置菜单',
+							  shadeClose: false,
+							  shade: 0.8,
+							  area: ['300px', '600px'],
+							  content: '/houtai/role/set_menu?id='+id //iframe的url
+							});
+					}
+				});
+		});
+		//子窗口调用 的  关闭窗口方法 
+		function closeDlg(msg){
+			//此方法必须写在父窗口下，子类弹窗必须在父类才能关闭
+			 layer.closeAll();
+			 layer.msg(msg);
+		}
+</script>
+
+</body>
+</html>

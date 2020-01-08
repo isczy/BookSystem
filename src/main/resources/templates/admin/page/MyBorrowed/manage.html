@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title th:text="${title}"></title>
+<div th:include="/common/layui"></div>
+<div th:include="/common/jq"></div>
+
+
+</head>
+<body style="padding-top: 3px;">
+
+<form class="layui-form" action="" lay-filter="example">
+  <div class="layui-inline">
+    <label class="layui-form-label">状态：</label>
+    <div class="layui-input-inline">
+      <select name="state" lay-filter="zhuangtai">
+      	<option value="1" selected="">已归还</option>
+        <option value="0">未归还</option>
+        <option value="2">被催还</option>
+      </select>
+    </div>
+  </div>
+   <div class="layui-inline">
+    <div class="layui-input-inline">
+      <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
+    </div>
+  </div>
+</form>
+
+<table class="layui-hide"   id="table" lay-filter="table"></table>
+
+
+<script type="text/html" id="table_bar">
+<div class="layui-btn-group">
+	<a class="layui-btn layui-btn-xs" lay-event="edit">归还此书</a>
+</div>
+</script>
+
+</body>
+
+
+
+<script type="text/html" id="format_type">
+{{#  if(d.state==0){ }}
+未归还
+{{#  } else if(d.state==1) {  }}
+已归还
+{{#  } else if(d.state==2) {   }}
+被催还
+{{#  }  	}}
+</script>
+<script th:inline="none">
+		layui.use(['layer', 'table', 'form' ], function() {
+			var form = layui.form
+			,layer = layui.layer //弹层
+			, table = layui.table; //表格
+		
+			
+			//监听提交 lay-filter="search"
+	        form.on('submit(search)', function(data){
+	            var formData = data.field;
+	            var state = formData.state;
+	                
+	            //执行重载
+	            table.reload('table', {
+	                page: {
+	                    curr: 1 //重新从第 1 页开始
+	                }
+	                , where: {//这里传参  向后台
+	                	state:state
+	                    //可传多个参数到后台...  ，分隔
+	                }
+	                , url: '/admin/MyBorrowed/search'
+	                , method: 'post'
+	            });
+	            return false;//false：阻止表单跳转  true：表单跳转
+	        });
+			
+			
+			  table.render({
+			    elem: '#table'
+			    ,url: '/admin/MyBorrowed/search?state=1'
+			    ,id: 'table'
+				,page: true
+				,limit:10
+			    ,limits:[10,20,30,50]
+			  	,cols: [[
+			  			{field:'bianhao', title: '图书编号'}
+				      ,{field:'bookName', title: '图书名称'}
+			  		  ,{field:'username', title: '读者号'}
+				      ,{field:'userTrueName', title: '读者姓名'}
+				      ,{field:'state', title: '状态',templet: '#format_type'}
+				      ,{field:'startTime', title: '借阅时间',sort: true}
+				      ,{field:'endTime', title: '归还时间',sort: true}
+				      ,{fixed:'right',title: '操作', toolbar: '#table_bar'}
+			       ]]
+			  });
+			
+			
+			//监听工具条 table_bar
+				table.on('tool(table)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+					var data = obj.data; //获得当前行数据
+					 var layEvent = obj.event; //获得 lay-event 对应的值
+					 var id = data.id; 
+					 var bookId = data.bookId;
+					if (layEvent == 'edit') {
+						$.post('/admin/MyBorrowed/giveBack', {id:id,bookId:bookId}, function(result) {
+							if(result.success){
+				    			layer.closeAll();
+				    			layer.msg(result.msg);
+				    			  table.reload('table', {
+						    			where: {}
+						    	  		,page: {curr: 1}//重新从第 1 页开始
+						    	    });
+				    		}else{
+				    			layer.closeAll();
+				    			layer.alert('归还失败:'+result.msg);
+				    		}
+						}, 'json');
+						
+					}
+				});
+	
+				 
+		});
+</script>
+
+</html>
