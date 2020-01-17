@@ -19,7 +19,7 @@ import javax.servlet.ServletContextListener;
  * #初始化加载数据
  *
  * 这里的作用是为了将我们的数据库内容返回一个对象到application.propertis配置中
- * 在这里，我将从数据库中拉取到了网站名称的配置，返回给了配置项
+ * 在这里，我只是从数据库中查到到了网站名称的配置，返回给了配置项
  * @author changziyang
  *
  */

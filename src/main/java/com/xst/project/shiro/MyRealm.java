@@ -52,7 +52,6 @@ public class MyRealm extends AuthorizingRealm {
 		for (RoleMenu roleMenu : roleMenuList) {
 			info.addStringPermission(menuMapper.findById(roleMenu.getMenuId()).getPermissions());// 添加权限
 		}
-
 		// 设置角色
 		Set<String> roles = new HashSet<String>();
 		roles.add(roleMapper.findById(user.getRoleId()).getName());

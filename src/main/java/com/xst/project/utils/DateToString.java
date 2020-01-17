@@ -1,4 +1,4 @@
-package com.xst.project.util;
+package com.xst.project.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

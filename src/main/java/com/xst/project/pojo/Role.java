@@ -1,106 +1,29 @@
 package com.xst.project.pojo;
 
+import lombok.Data;
+
+/**
+ * ******************************************************************
+ * 
+ * @brief 角色
+ * @version 0.1
+ * @date 2020年1月17日 下午3:22:37
+ * @author ChangZiYang
+ *******************************************************************
+ */
+@Data
 public class Role {
 
-  private Integer id;
-  private String createDateTime;
-  private String name;
-  private String orderNo;
-  private String updateDateTime;
-  private String remark;
+	private Integer id;
 
+	private String createDateTime;// 创建时间
 
-  /**  
- * 获取remark
- */
-public String getRemark() {
-	return remark;
-}
+	private String name;// 角色名称
 
-/**  
- * 设置remark
- */
-public void setRemark(String remark) {
-	this.remark = remark;
-}
+	private String orderNo;// 排序号
 
-public Integer getId() {
-    return id;
-  }
+	private String updateDateTime;// 更新时间
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-
-
-
-
-
-
-/**  
- * 获取createDateTime
- */
-public String getCreateDateTime() {
-	return createDateTime;
-}
-
-/**  
- * 设置createDateTime
- */
-public void setCreateDateTime(String createDateTime) {
-	this.createDateTime = createDateTime;
-}
-
-/**  
- * 获取updateDateTime
- */
-public String getUpdateDateTime() {
-	return updateDateTime;
-}
-
-/**  
- * 设置updateDateTime
- */
-public void setUpdateDateTime(String updateDateTime) {
-	this.updateDateTime = updateDateTime;
-}
-
-public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-/**  
- * 获取orderNo
- */
-public String getOrderNo() {
-	return orderNo;
-}
-
-/**  
- * 设置orderNo
- */
-public void setOrderNo(String orderNo) {
-	this.orderNo = orderNo;
-}
-
-/**************************************************
- * 功能实现描述：
- * @return
- * @author create: ChangZiYang 2019年9月12日 上午11:36:17
- * @author modify: 
- */
-@Override
-public String toString() {
-	return "Role [id=" + id + ", createDateTime=" + createDateTime + ", name=" + name + ", orderNo=" + orderNo
-			+ ", updateDateTime=" + updateDateTime + ", remark=" + remark + "]";
-}
-
-
-
+	private String remark;// 备注
 
 }
