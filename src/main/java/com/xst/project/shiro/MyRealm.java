@@ -52,7 +52,6 @@ public class MyRealm extends AuthorizingRealm {
 		for (RoleMenu roleMenu : roleMenuList) {
 			info.addStringPermission(menuMapper.findById(roleMenu.getMenuId()).getPermissions());// 添加权限
 		}
-
 		// 设置角色
 		Set<String> roles = new HashSet<String>();
 		roles.add(roleMapper.findById(user.getRoleId()).getName());
@@ -69,11 +68,13 @@ public class MyRealm extends AuthorizingRealm {
 		String name = (String) token.getPrincipal();// 拿到的是用户名 就是UsernamePasswordTokenr的第一个参数 name
 		User user = userService.findByName(name);// 根据name找到数据库中的user实体
 		if (user != null) {// 这里的一步主要是来判断密码是否正确
-			// 对于我的理解第一个值应该放用户对象进去，这样我们在进行上面的授权操作的时候可以更好的获取对象，来添加用户权限
-			// AuthenticationInfo authcInfo=new
-			// SimpleAuthenticationInfo(user.getName(),user.getPwd(),"xxx");
-			
-			return new SimpleAuthenticationInfo(user.getName(), user.getPwd(), "xxx");// 第三个参数只要不为null就行
+			/**
+			 * 对于传的三个参数
+			 * Object principal:可以传username或者user对象都可以
+			 * Object credentials:用户密码：注意这里是指从数据库中获取的password
+			 * String realmName:即当前realm的名称(个人尝试：随便传个字符串就行，但不能为null，具体不太明白)
+			 */
+			return new SimpleAuthenticationInfo(user.getName(), user.getPwd(), "MyRealm");
 		} else {
 			return null;
 		}

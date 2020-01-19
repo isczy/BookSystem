@@ -3,6 +3,7 @@ package com.xst.project.service.serviceImpl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,57 +16,85 @@ import com.xst.project.mapper.BorrowedRecordMapper;
 import com.xst.project.pojo.Book;
 import com.xst.project.pojo.BorrowedRecord;
 import com.xst.project.pojo.User;
-import com.xst.project.service.BookService;
 import com.xst.project.service.BorrowedRecordServive;
-import com.xst.project.util.DateToString;
+import com.xst.project.utils.PublicUtil;
 
 @Service
 public class BorrowedRecordServiveImpl implements BorrowedRecordServive {
-
+	
+	private static Logger log = Logger.getLogger(BorrowedRecordServiveImpl.class);
 	@Autowired
 	private BorrowedRecordMapper borrowedRecordMapper;
 	@Autowired
 	private BookMapper bookMapper;
 	
 
+	/**
+	 * ************************************************
+	 * 功能实现描述：分页查询借阅记录
+	 * @param page
+	 * @param limit
+	 * @return
+	 * @author create: ChangZiYang 2020年1月17日 下午4:46:44
+	 * @author modify:
+	 */
 	@Override
 	public Map<String, Object> list(Integer page, Integer limit) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		PageHelper.startPage(page, limit);
-		Page<BorrowedRecord> pageBook = (Page<BorrowedRecord>) borrowedRecordMapper.findAll();
-		result.put("data", pageBook.getResult());
-		result.put("count", pageBook.getTotal());
-		result.put("code", 0);
-		result.put("msg", "");
+		try {
+			PageHelper.startPage(page, limit);
+			Page<BorrowedRecord> pageBook = (Page<BorrowedRecord>) borrowedRecordMapper.findAll();
+			result.put("data", pageBook.getResult());
+			result.put("count", pageBook.getTotal());
+			result.put("code", 0);
+			result.put("msg", "");
+		} catch (Exception e) {
+			log.error("BorrowedRecordServiveImpl >> list-分页查询借阅记录失败："+e.getMessage());
+		}
 		return result;
 	}
 
-
+	/**
+	 * ************************************************
+	 * 功能实现描述：分页条件查询询借阅记录
+	 * @param page
+	 * @param limit
+	 * @param state
+	 * @param username
+	 * @return
+	 * @author create: ChangZiYang 2020年1月17日 下午4:47:07
+	 * @author modify:
+	 */
 	@Override
 	public Map<String, Object> search(Integer page, Integer limit, Integer state, String username) {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
-		PageHelper.startPage(page, limit);
-		if (username!=null&&username!="") {
-			Page<BorrowedRecord> pageBorrowedRecord = (Page<BorrowedRecord>) borrowedRecordMapper.findByUserNameAndState(username, state);
+		try {
+			PageHelper.startPage(page, limit);
+			if (username!=null&&username!="") {
+				Page<BorrowedRecord> pageBorrowedRecord = (Page<BorrowedRecord>) borrowedRecordMapper.findByUserNameAndState(username, state);
+				result.put("data", pageBorrowedRecord.getResult());
+				result.put("count", pageBorrowedRecord.getTotal());
+				result.put("code", 0);
+				result.put("msg", "");
+				return result;
+			}
+			Page<BorrowedRecord> pageBorrowedRecord = (Page<BorrowedRecord>) borrowedRecordMapper.findByState(state);
 			result.put("data", pageBorrowedRecord.getResult());
 			result.put("count", pageBorrowedRecord.getTotal());
 			result.put("code", 0);
 			result.put("msg", "");
-			return result;
+		} catch (Exception e) {
+			log.error("BorrowedRecordServiveImpl >> search-分页条件查询借阅记录失败："+e.getMessage());
 		}
-		Page<BorrowedRecord> pageBorrowedRecord = (Page<BorrowedRecord>) borrowedRecordMapper.findByState(state);
-		result.put("data", pageBorrowedRecord.getResult());
-		result.put("count", pageBorrowedRecord.getTotal());
-		result.put("code", 0);
-		result.put("msg", "");
+		
 		return result;
 	}
 
 
 	@Transactional
 	@Override
-	public Map<String, Object> add(Integer bookId) {
+	public synchronized Map<String, Object> add(Integer bookId) {
 		Map<String, Object> result = new HashMap<>();
 		//从session中获取user的信息并存入borrowedRecord
 		User currentUser = (User) SecurityUtils.getSubject().getSession().getAttribute("currentUser");
@@ -89,7 +118,7 @@ public class BorrowedRecordServiveImpl implements BorrowedRecordServive {
 		borrowedRecord.setBookId(bookId);
 
 		borrowedRecord.setState(0);//状态0为未还
-		borrowedRecord.setStartTime(new DateToString().dateToSring());//设置借阅时间
+		borrowedRecord.setStartTime(PublicUtil.getNowTime());//设置借阅时间
 		
 		try {
 			borrowedRecordMapper.add(borrowedRecord);
@@ -103,7 +132,7 @@ public class BorrowedRecordServiveImpl implements BorrowedRecordServive {
 			result.put("success", true);
 			result.put("msg", "借阅成功");
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("BorrowedRecordServiveImpl >> add-借阅图书失败："+e.getMessage());
 			result.put("success", false);
 			result.put("msg", "借阅失败，请重试");
 		}
@@ -111,7 +140,14 @@ public class BorrowedRecordServiveImpl implements BorrowedRecordServive {
 	}
 
 
-	@Transactional
+	/**
+	 * ************************************************
+	 * 功能实现描述：催还图书
+	 * @param id
+	 * @return
+	 * @author create: ChangZiYang 2020年1月17日 下午4:43:46
+	 * @author modify:
+	 */
 	@Override
 	public Map<String, Object> wmgp(Integer id) {
 		Map<String, Object> result = new HashMap<>();
@@ -127,13 +163,12 @@ public class BorrowedRecordServiveImpl implements BorrowedRecordServive {
 			result.put("msg", "已催还，请勿再次操作");
 			return result;
 		}
-		
 		try {
 			borrowedRecordMapper.updateState(id, 2);
 			result.put("success", true);
 			result.put("msg", "催还成功");
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("BorrowedRecordServiveImpl >> wmgp-催还图书失败："+e.getMessage());
 			result.put("success", false);
 			result.put("msg", "出错啦，请重试");
 		}

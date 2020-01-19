@@ -1,12 +1,10 @@
-package com.xst.project.util;
-
-
+package com.xst.project.utils;
 
 import org.apache.shiro.crypto.hash.Md5Hash;
 
 /**
  * @author Administrator
- *
+ *用于测试加密程序
  *123456 =ba61ce8fa1e3725876e6363c76043c8d
  */
 public class CryptographyUtil {

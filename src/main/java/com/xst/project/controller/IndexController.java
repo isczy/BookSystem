@@ -1,10 +1,21 @@
 package com.xst.project.controller;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.xst.project.mapper.MenuMapper;
@@ -16,15 +27,16 @@ import com.xst.project.service.MenuService;
 
 import net.sf.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+/**
+ * ******************************************************************
+ * @brief      系统的入口
+ * @version    0.1
+ * @date       2020年1月17日 下午3:25:29
+ * @author     ChangZiYang
+ *******************************************************************
+ */
 @Controller
 public class IndexController {
-
 
     @Autowired
     private MenuService menuService;
@@ -66,16 +78,11 @@ public class IndexController {
 	 */
 	@RequestMapping("/admin/main")
 	public ModelAndView admin_main(HttpServletResponse  res,HttpServletRequest req,HttpSession session) throws Exception {
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("/admin/main");
-		
-		//session.getAttribute("currentUser"); 
-		
+		ModelAndView mv = new ModelAndView();
 		User currentUser = (User) SecurityUtils.getSubject().getSession().getAttribute("currentUser"); 
 		if(currentUser.getRoleId()==null){
-			return mav;
+			return mv;
 		}
-		
 		//根据当前的用户   对应的角色。 展示菜单 
 			//查询父节点的菜单
 		List<Menu> menuList =  menuService.findAll(-1);
@@ -95,11 +102,9 @@ public class IndexController {
 				list.add(node);
 			}
 		}
-		//根据当前的用户   对应的角色。 展示菜单 
-		
-		mav.addObject("treeList", list);
-		
-		return mav;
+		mv.addObject("treeList", list);
+		mv.setViewName("/admin/main");
+		return mv;
 	}
 	
 	

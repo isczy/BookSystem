@@ -1,16 +1,14 @@
 package com.xst.project.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.xst.project.pojo.User;
 import com.xst.project.service.UserService;
-import com.xst.project.util.CryptographyUtil;
-import com.xst.project.util.StringUtil;
-import javax.validation.Valid;
-import java.util.HashMap;
+import com.xst.project.utils.CryptographyUtil;
+import com.xst.project.utils.PublicUtil;
+
 import java.util.Map;
 
 @RestController
@@ -39,7 +37,7 @@ public class Admin_User_Controller {
     @RequestMapping("/set_new_pwd")
     public Map<String, Object> set_new_pwd(User user)throws Exception {
     	System.out.println(user);
-        if(StringUtil.isNotEmpty(user.getPwd())){
+        if(!PublicUtil.isEmpty(user.getPwd())){
             user.setPwd(CryptographyUtil.md5(user.getPwd(),"java"));
         }
         return userService.updatePwd(user);
