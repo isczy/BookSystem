@@ -9,7 +9,6 @@ import com.xst.project.pojo.Role;
 import com.xst.project.pojo.RoleMenu;
 import com.xst.project.pojo.User;
 import com.xst.project.service.RoleService;
-import com.xst.project.utils.DateToString;
 import com.xst.project.utils.PublicUtil;
 
 import org.apache.log4j.Logger;
@@ -57,8 +56,7 @@ public class RoleServiceImpl implements RoleService {
 		}
 		try {
 			Role olds = roleMapper.findById(role.getId());
-			String dateString = new DateToString().dateToSring();
-			role.setUpdateDateTime(dateString);
+			role.setUpdateDateTime(PublicUtil.getNowTime());
 			role = repalce(role, olds);
 
 			roleMapper.update(role);
@@ -193,8 +191,7 @@ public class RoleServiceImpl implements RoleService {
 			}
 			// 修改角色 的更新 时间
 			Role role = roleMapper.findById(roleId);
-			String date = new DateToString().dateToSring();
-			role.setUpdateDateTime(date);
+			role.setUpdateDateTime(PublicUtil.getNowTime());
 			roleMapper.update(role);
 
 			result.put("success", true);

@@ -13,7 +13,7 @@ import com.github.pagehelper.PageHelper;
 import com.xst.project.mapper.BookMapper;
 import com.xst.project.pojo.Book;
 import com.xst.project.service.BookService;
-import com.xst.project.utils.DateToString;
+import com.xst.project.utils.PublicUtil;
 
 @Service("bookService")
 public class BookServiceImpl implements BookService {
@@ -39,9 +39,8 @@ public class BookServiceImpl implements BookService {
 			if (null != resultMap) {
 				return resultMap;
 			}
-			String date = new DateToString().dateToSring();
-			book.setCreateDateTime(date);// 这里两个是取当前存入数据库的时间插入数据库
-			book.setUpdateDateTime(date);
+			book.setCreateDateTime(PublicUtil.getNowTime());// 这里两个是取当前存入数据库的时间插入数据库
+			book.setUpdateDateTime(PublicUtil.getNowTime());
 			// 设置book表的book_type_id字段
 			book.setBookTypeId(book.getBookType().getId());
 		
@@ -77,7 +76,7 @@ public class BookServiceImpl implements BookService {
 			book = repalce(book, olds);
 			// 设置book表的book_type_id字段
 			book.setBookTypeId(book.getBookType().getId());
-			book.setUpdateDateTime(new DateToString().dateToSring());
+			book.setUpdateDateTime(PublicUtil.getNowTime());
 			bookMapper.update(book);
 			result.put("success", true);
 			result.put("msg", "修改成功");

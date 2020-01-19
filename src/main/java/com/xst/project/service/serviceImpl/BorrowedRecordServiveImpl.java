@@ -17,7 +17,7 @@ import com.xst.project.pojo.Book;
 import com.xst.project.pojo.BorrowedRecord;
 import com.xst.project.pojo.User;
 import com.xst.project.service.BorrowedRecordServive;
-import com.xst.project.utils.DateToString;
+import com.xst.project.utils.PublicUtil;
 
 @Service
 public class BorrowedRecordServiveImpl implements BorrowedRecordServive {
@@ -118,7 +118,7 @@ public class BorrowedRecordServiveImpl implements BorrowedRecordServive {
 		borrowedRecord.setBookId(bookId);
 
 		borrowedRecord.setState(0);//状态0为未还
-		borrowedRecord.setStartTime(new DateToString().dateToSring());//设置借阅时间
+		borrowedRecord.setStartTime(PublicUtil.getNowTime());//设置借阅时间
 		
 		try {
 			borrowedRecordMapper.add(borrowedRecord);

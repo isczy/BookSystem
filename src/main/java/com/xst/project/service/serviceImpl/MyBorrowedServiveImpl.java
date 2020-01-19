@@ -15,7 +15,7 @@ import com.xst.project.mapper.BorrowedRecordMapper;
 import com.xst.project.pojo.Book;
 import com.xst.project.pojo.BorrowedRecord;
 import com.xst.project.service.MyBorrowedServive;
-import com.xst.project.utils.DateToString;
+import com.xst.project.utils.PublicUtil;
 
 @Service
 public class MyBorrowedServiveImpl implements MyBorrowedServive {
@@ -74,7 +74,7 @@ public class MyBorrowedServiveImpl implements MyBorrowedServive {
 				return result;
 			}
 			// 修改该条借阅记录状态为1和归还时间就是已还
-			borrowedRecordMapper.updateStateEndTime(borrowedRecord.getId(), 1, new DateToString().dateToSring());
+			borrowedRecordMapper.updateStateEndTime(borrowedRecord.getId(), 1, PublicUtil.getNowTime());
 			// 让该图书的库存+1
 			// 通过bookId查出book相关的信息
 			Book book = bookMapper.findById(borrowedRecord.getBookId());

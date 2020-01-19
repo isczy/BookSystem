@@ -15,7 +15,7 @@ import com.xst.project.mapper.BookTypeMapper;
 import com.xst.project.pojo.Book;
 import com.xst.project.pojo.BookType;
 import com.xst.project.service.BookTypeService;
-import com.xst.project.utils.DateToString;
+import com.xst.project.utils.PublicUtil;
 
 @Service("bookTypeService")
 public class BookTypeServiceImpl implements BookTypeService {
@@ -42,9 +42,8 @@ public class BookTypeServiceImpl implements BookTypeService {
 			if (null != resultMap) {
 				return resultMap;
 			}
-			String dateString = new DateToString().dateToSring();
-			bookType.setCreateDateTime(dateString);
-			bookType.setUpdateDateTime(dateString);
+			bookType.setCreateDateTime(PublicUtil.getNowTime());
+			bookType.setUpdateDateTime(PublicUtil.getNowTime());
 		
 			bookTypeMapper.add(bookType);
 			result.put("success", true);
@@ -78,7 +77,7 @@ public class BookTypeServiceImpl implements BookTypeService {
 			// 把没有值的数据 换成原数据库的数据。
 			bookType = repalce(bookType, olds);
 			// 设置更新的时间
-			bookType.setUpdateDateTime(new DateToString().dateToSring());
+			bookType.setUpdateDateTime(PublicUtil.getNowTime());
 			bookTypeMapper.update(bookType);
 			result.put("success", true);
 			result.put("msg", "修改成功");

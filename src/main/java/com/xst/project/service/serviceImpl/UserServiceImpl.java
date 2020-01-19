@@ -6,7 +6,6 @@ import com.xst.project.mapper.UserMapper;
 import com.xst.project.pojo.User;
 import com.xst.project.service.UserService;
 import com.xst.project.utils.CryptographyUtil;
-import com.xst.project.utils.DateToString;
 import com.xst.project.utils.PublicUtil;
 
 import org.apache.log4j.Logger;
@@ -52,9 +51,8 @@ public class UserServiceImpl implements UserService {
 				return resultMap;
 			}
 			user.setPwd(CryptographyUtil.md5(user.getPwd(), "java"));// 对存入数据库的密码进行加密加盐
-			String date = new DateToString().dateToSring();
-			user.setCreateDateTime(date);// 这里两个是取当前存入数据库的时间插入数据库
-			user.setUpdateDateTime(date);
+			user.setCreateDateTime(PublicUtil.getNowTime());// 这里两个是取当前存入数据库的时间插入数据库
+			user.setUpdateDateTime(PublicUtil.getNowTime());
 			// 设置user表的role_id字段
 			user.setRoleId(user.getRole().getId());
 			userMapper.savaUser(user);
